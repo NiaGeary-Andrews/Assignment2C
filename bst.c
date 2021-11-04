@@ -245,9 +245,83 @@ int sumSubtree(Node *N)
 
 }
 
-Node* balanceTree(Node* root){
-	//TODO: write this
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+// For this part I am first going to do an inorder traversal of the tree and store the nodes in a dynamic array. Which I am going to create using pointers and the malloc function
+
+int * inOrder(Node* root){
+	int *p_array;
+	int i = 0;
+	
+	p_array = (int *)malloc(sizeof(int)*(sizeOfTree(root)));
+	
+	inOrder(root->left);
+	p_array[i] = (root->data);
+	i++;
+	inOrder(root->right);
+	//trying to fix segmentation fault
+	free_subtree(root);
+	return p_array;
 }
+
+Node* sortArray(int arr[], int start, int end){
+	if (start > end){
+		return NULL;
+	}
+	
+    //makes the middle element the root
+    int mid = (start + end)/2; 
+    Node *root = mk_node(arr[mid]); 
+  
+    /* Recursively construct the left subtree and make it 
+       left child of root */
+    root->left =  sortArray(arr, start, mid-1); 
+  
+    /* Recursively construct the right subtree and make it 
+       right child of root */
+    root->right = sortArray(arr, mid+1, end); 
+    free(arr);
+    return root; 
+}
+
+
+//This is for working out the size of the tree so I know how big of an array to create
+int sizeOfTree(Node* root){
+	if (root == NULL){
+		return 0;
+	}
+	else{
+	     return(sizeOfTree(root->left) + 1 + sizeOfTree(root->right));
+	}
+}
+
+
+Node* balanceTree(Node* root){
+	return sortArray(inOrder(root), 0, sizeOfTree(root)-1);
+}
+
+
+/*
+//creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
+int * inOrder(Node* root){
+
+	static int arr[sizeOfTree(root)];
+	int i = 0;
+	
+  	//if the tree is empty it returns an empty list
+  	if (root == NULL){
+  		return 0;
+  	}
+  	else{
+  		inOrder(root->left);
+  		i++;
+  		arr[i] = (root->data);
+  		inOrder(root->right);
+  		return arr;
+  	}
+}
+*/
+
+
 
 // This functions converts an unbalanced BST to a balanced BST 
 // Goal: create an array and append the elements to the array in this order. I will get the size of this array by making a function that gets the size of the tree and a separate one that creates an in order traversal of the tree and stores it in a list. Then using this list I will do what the assignment spec says to make it into a balanced tree. Will have to create a new root node and tree so can still traverse the old one. Build new array then build tree in separate functions!!!
