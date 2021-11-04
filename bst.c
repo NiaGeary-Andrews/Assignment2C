@@ -248,6 +248,16 @@ int sumSubtree(Node *N)
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 // For this part I am first going to do an inorder traversal of the tree and store the nodes in a dynamic array. Which I am going to create using pointers and the malloc function
 
+//This is for working out the size of the tree so I know how big of an array to create
+int sizeOfTree(Node* root){
+	if (root == NULL){
+		return 0;
+	}
+	else{
+	     return(sizeOfTree(root->left) + 1 + sizeOfTree(root->right));
+	}
+}
+
 int * inOrder(Node* root){
 	int *p_array;
 	int i = 0;
@@ -284,19 +294,9 @@ Node* sortArray(int arr[], int start, int end){
 }
 
 
-//This is for working out the size of the tree so I know how big of an array to create
-int sizeOfTree(Node* root){
-	if (root == NULL){
-		return 0;
-	}
-	else{
-	     return(sizeOfTree(root->left) + 1 + sizeOfTree(root->right));
-	}
-}
-
 
 Node* balanceTree(Node* root){
-	return sortArray(inOrder(root), 0, sizeOfTree(root)-1);
+	return sortArray(inOrder(root), 0, ((sizeOfTree(root))-1));
 }
 
 
