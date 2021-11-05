@@ -224,13 +224,15 @@ int depth (Node * R, Node * N) {
     return -1;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------------------
+//counts nodes, look further into this!!
 int countNodes(Node* root){
 	//TODO: write this function
 }
 
 
-
-// Pretty sure this works but it requires more extensive testing!!!
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// Sums together the nodes of the trees
 int sumSubtree(Node *N)
 {
   int sum;	
@@ -258,71 +260,45 @@ int sizeOfTree(Node* root){
 	}
 }
 
-int * inOrder(Node* root){
-	int *p_array;
-	int i = 0;
-	
-	p_array = (int *)malloc(sizeof(int)*(sizeOfTree(root)));
-	
-	inOrder(root->left);
-	p_array[i] = (root->data);
-	i++;
-	inOrder(root->right);
-	//trying to fix segmentation fault
-	free_subtree(root);
-	return p_array;
-}
 
-Node* sortArray(int arr[], int start, int end){
-	if (start > end){
-		return NULL;
-	}
-	
-    //makes the middle element the root
-    int mid = (start + end)/2; 
-    Node *root = mk_node(arr[mid]); 
-  
-    /* Recursively construct the left subtree and make it 
-       left child of root */
-    root->left =  sortArray(arr, start, mid-1); 
-  
-    /* Recursively construct the right subtree and make it 
-       right child of root */
-    root->right = sortArray(arr, mid+1, end); 
-    free(arr);
-    return root; 
-}
-
-
-
-Node* balanceTree(Node* root){
-	return sortArray(inOrder(root), 0, ((sizeOfTree(root))-1));
-}
-
-
-/*
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 //creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
-int * inOrder(Node* root){
-
-	static int arr[sizeOfTree(root)];
-	int i = 0;
+int * inOrder(Node* root, int arr[],int i){
 	
   	//if the tree is empty it returns an empty list
   	if (root == NULL){
   		return 0;
   	}
   	else{
-  		inOrder(root->left);
-  		i++;
+  		inOrder(root->left,arr,i++);
   		arr[i] = (root->data);
-  		inOrder(root->right);
+  		inOrder(root->right,arr,i++);
   		return arr;
   	}
 }
-*/
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
+//this sorts the array into the balanced subtree by getting the middle element and making it the root. Then recursively doing this for the left and right subtrees
+Node* sortArray(int arr[], int start, int end){
+    if (start > end){
+		return NULL;
+    }
+	
+    //makes the middle element the root
+    int mid = (start + end)/2; 
+    Node *root = mk_node(arr[mid]); 
+  
+    //uses recursion to get the next element in the array and makes it the left child of the current root
+    root->left =  sortArray(arr, start, mid-1); 
+  
+    //uses recursion to get the next element in the array and makes it the right child of the current root
+    root->right = sortArray(arr, mid+1, end); 
+    //free(arr);
+    return root; 
+}
 
 
-
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // This functions converts an unbalanced BST to a balanced BST 
 // Goal: create an array and append the elements to the array in this order. I will get the size of this array by making a function that gets the size of the tree and a separate one that creates an in order traversal of the tree and stores it in a list. Then using this list I will do what the assignment spec says to make it into a balanced tree. Will have to create a new root node and tree so can still traverse the old one. Build new array then build tree in separate functions!!!
 
@@ -332,65 +308,17 @@ int * inOrder(Node* root){
 		a) Get the middle of the left half and make it the left child of the root created in step
 		b) Get the middle of the right half and make it the right child of the root created in step 1. You might need helper functions during the implementation.
 */
-/*Node* balanceTree(Node* root) 
-{
+
+Node* balanceTree(Node* root){
+	//inOrder(root);
 	int size = sizeOfTree(root);
-	static int arr[size] = inOrderArray(root);
-	//Node oldRoot = root;
-	if (root == NULL){
-		return NULL;
-	}
-	//this will not work, need a way of splitting up new lists
-	else{
-		root = arr[halfArr(size)];
-		root->left = arr[halfArr(size/2)];
-		root->right = arr[(halfArr(size))+(halfArr(size/2))];
-	}
+	int * array_pointer;
+	array_pointer = (int *)malloc(sizeof(int)*size);
 	
-	return root;
-} */
-
-//this just works out the halfway points of the list
-/*int halfArr(int size){
-	int half;
-	if ((size % 2 == 0)){
-		half = size/2;
-	}
-	else {
-		half = (size/2) + 0.5;
-	}
-	return half;
-}*/
-
-//This is for working out the size of the tree so I know how big of an array to create
-/*int sizeOfTree(Node* root){
-	if (root == NULL){
-		return 0;
-	}
-	else{
-		return(sizeOfTree(root->left) + 1 + sizeOfTree(root->right));
-	}
-}*/
-
-//creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from function
-/*int * inOrderArray(Node* root){
-
-	static int arr[sizeOfTree(root)];
-	int i = 0;
-	
-  	//if the tree is empty it returns an empty list
-  	if (root == NULL){
-  		return 0;
-  	}
-  	else{
-  		inOrderArray(root->left);
-  		i++;
-  		arr[i] = (root->data);
-  		inOrderArray(root->right);
-  		return arr;
-  	}
+	return sortArray((inOrder(root,array_pointer, 0)), 0, (size)-1);
 }
-*/
+
+
 
 
 
