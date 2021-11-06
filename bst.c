@@ -11,6 +11,7 @@ struct _Node {
   Node * left, * right;
 };
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /* 
    Returns the parent of an either existing or hypotetical node with the given data  
  */
@@ -25,7 +26,7 @@ Node * find_parent(Node * root, int data) {
   else
     return find_parent(next, data);
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /* 
    Constructs a new node
  */
@@ -36,6 +37,7 @@ Node * mk_node(int data) {
   return node;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Node * insertNode(Node * root, int data) {
   if (root == NULL)
     return mk_node(data);
@@ -55,13 +57,16 @@ Node * insertNode(Node * root, int data) {
     else
       parent->right = child;
 
-    return child;
+    //return child;
+   //return parent;
+   return root;
   } else {
     // data found, then return null
     return NULL;
   } 
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool is_ordered(Node * root) {
   if (root == NULL)
     return true;
@@ -72,6 +77,7 @@ bool is_ordered(Node * root) {
   return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Node * deleteNode(Node * root, int data) {
   assert(is_ordered(root));
 
@@ -128,14 +134,17 @@ Node * deleteNode(Node * root, int data) {
   return new_root;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void printSubtree(Node * N) {
-  if (N == NULL) return;
-
+  if (N == NULL){
+  	return;
+  }
   printSubtree(N->left);
   printf("%d \n", N->data);
   printSubtree(N->right);
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 int countLeaves(Node * N) {
   if (N == NULL)
     return 0;
@@ -146,6 +155,7 @@ int countLeaves(Node * N) {
   return countLeaves(N->left) + countLeaves(N->right);
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /* 
    Frees the entire subtree rooted in 'root' (this includes the node 'root')
  */
@@ -158,6 +168,7 @@ void free_subtree(Node * root) {
   free(root);
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
  The function freeSubtree returns the new root after freeing the tree, unlike in assignment 1 where no return value was required. After freeing the entire tree the new root is that of the empty tree, which is NULL. This is clear from test_bst.c at lines 27 and 28.
 */
@@ -171,7 +182,7 @@ Node* freeSubtree(Node *N){
   return NULL;
 }
 
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /* 
    Deletes all nodes that belong to the subtree (of the tree of rooted in 'root') 
    whose root node has data 'data'
@@ -204,6 +215,7 @@ Node * deleteSubtree(Node * root, int data) {
   return root;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /* 
    Compute the depth between root R and node N 
 
@@ -239,10 +251,13 @@ int sumSubtree(Node *N)
   if (N == NULL) {
   	return 0;
   }
-
-  sumSubtree(N->left);
-  sum += (N->data);
-  sumSubtree(N->right);
+	
+  else{
+  	sumSubtree(N->left);
+  	sum += (N->data);
+  	sumSubtree(N->right);
+        //return sum;
+  }
   return sum;
 
 }
@@ -260,39 +275,72 @@ int sizeOfTree(Node* root){
 	}
 }
 
-
+int i = 0;
+/*HAS SAME SUM EVERYTIME BUT FAILS IN SECOND PART
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
-int * inOrder(Node* root, int arr[],int i){
+//TO DO WITH THIS FUNCTION AND THE WAY THE I IS BEING INCREMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+int * inOrder(Node* root, int arr[], int i){
+	
 	
   	//if the tree is empty it returns an empty list
   	if (root == NULL){
-  		return 0;
+  		return NULL;
   	}
   	else{
+  	  	//arr[i] = (root->data);
   		inOrder(root->left,arr,i++);
   		arr[i] = (root->data);
   		inOrder(root->right,arr,i++);
   		return arr;
   	}
 }
+*/
+
+/* SUPPOSEDLY PASSES EVERYTIME BUT HAS DIFFERENCE IN SUMS
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+//creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
+//TO DO WITH THIS FUNCTION AND THE WAY THE I IS BEING INCREMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+int * inOrder(Node* root, int arr[]){
+	
+	
+  	//if the tree is empty it returns an empty list
+  	if (root == NULL){
+  		return NULL;
+  	}
+  	else{
+  	  	//arr[i] = (root->data);
+  		inOrder(root->left,arr);
+  		arr[i] = (root->data);
+  		i++;
+  		inOrder(root->right,arr);
+  		return arr;
+  	}
+}
+*/
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 //this sorts the array into the balanced subtree by getting the middle element and making it the root. Then recursively doing this for the left and right subtrees
-Node* sortArray(int arr[], int start, int end){
+//thinking I might need to use the insert node function here but not sure?
+
+Node* sortArray(Node *root,int arr[], int start, int end){
     if (start > end){
-		return NULL;
+       return NULL;
     }
+    //think this code may be the problem, try taking root out an dthen just recalling everytime. Put it in the balance tree function
 	
     //makes the middle element the root
     int mid = (start + end)/2; 
-    Node *root = mk_node(arr[mid]); 
+    //Node *root = mk_node(arr[mid]); 
+    root = mk_node(arr[mid]);
   
     //uses recursion to get the next element in the array and makes it the left child of the current root
-    root->left =  sortArray(arr, start, mid-1); 
+    root->left = sortArray(root->left, arr, start, mid-1); 
+    //root->left = sortArray(arr, start, mid-1);
   
     //uses recursion to get the next element in the array and makes it the right child of the current root
-    root->right = sortArray(arr, mid+1, end); 
+    //root->right = sortArray(arr, mid+1, end); 
+    root->right = sortArray(root->right, arr, mid+1, end);
     //free(arr);
     return root; 
 }
@@ -313,9 +361,19 @@ Node* balanceTree(Node* root){
 	//inOrder(root);
 	int size = sizeOfTree(root);
 	int * array_pointer;
-	array_pointer = (int *)malloc(sizeof(int)*size);
-	
-	return sortArray((inOrder(root,array_pointer, 0)), 0, (size)-1);
+	int a =1;
+	if((array_pointer = (int *)malloc(sizeof(int)*size)) == NULL){
+		printf("Allocation failed");
+		exit(-1);
+	}
+	//array_pointer = (int *)malloc(sizeof(int)*size);
+	/*if (size == 1){
+		a = 1;
+	}
+	else{
+		a = size-1;
+	}*/
+	return sortArray(NULL,(inOrder(root,array_pointer)), 0, (size)-1);
 }
 
 
