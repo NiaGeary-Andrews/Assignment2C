@@ -253,12 +253,8 @@ int sumSubtree(Node *N)
   }
 	
   else{
-  	sumSubtree(N->left);
-  	sum += (N->data);
-  	sumSubtree(N->right);
-        //return sum;
+        return((sumSubtree(N->left)) + (N->data) + (sumSubtree(N->right)));
   }
-  return sum;
 
 }
 
@@ -276,7 +272,9 @@ int sizeOfTree(Node* root){
 }
 
 int i = 0;
-/*HAS SAME SUM EVERYTIME BUT FAILS IN SECOND PART
+
+/*
+//HAS SAME SUM EVERYTIME BUT FAILS IN SECOND PART
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
 //TO DO WITH THIS FUNCTION AND THE WAY THE I IS BEING INCREMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -295,12 +293,13 @@ int * inOrder(Node* root, int arr[], int i){
   		return arr;
   	}
 }
+
 */
 
-/* SUPPOSEDLY PASSES EVERYTIME BUT HAS DIFFERENCE IN SUMS
+//SUPPOSEDLY PASSES EVERYTIME BUT HAS DIFFERENCE IN SUMS
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
-//TO DO WITH THIS FUNCTION AND THE WAY THE I IS BEING INCREMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//SORTED THIS OUT NOW, IT WORKS
 int * inOrder(Node* root, int arr[]){
 	
 	
@@ -317,7 +316,6 @@ int * inOrder(Node* root, int arr[]){
   		return arr;
   	}
 }
-*/
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 //this sorts the array into the balanced subtree by getting the middle element and making it the root. Then recursively doing this for the left and right subtrees
@@ -361,11 +359,13 @@ Node* balanceTree(Node* root){
 	//inOrder(root);
 	int size = sizeOfTree(root);
 	int * array_pointer;
-	int a =1;
+	//int a =1;
 	if((array_pointer = (int *)malloc(sizeof(int)*size)) == NULL){
 		printf("Allocation failed");
 		exit(-1);
 	}
+	
+	
 	//array_pointer = (int *)malloc(sizeof(int)*size);
 	/*if (size == 1){
 		a = 1;
