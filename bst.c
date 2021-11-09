@@ -59,7 +59,7 @@ Node * insertNode(Node * root, int data) {
 
     //return child;
    //return parent;
-   return root;
+    return root;
   } else {
     // data found, then return null
     return NULL;

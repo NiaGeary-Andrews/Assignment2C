@@ -25,6 +25,7 @@ void *downtime(){
 	freeSubtree(root);
 	root = root_balanced;
 	freeSubtree(root_balanced);
+	
 
 	return NULL;
 }
@@ -42,7 +43,7 @@ void* ServeClient(char *client){
 	char ch;
 	FILE *fp;
 	
-
+	
 	//---------------------------------------------------
 	// This part opens a file and reads line by line the commands, think it just needs to be opened for reading though. Make sure to lock it to stop concurrency issues
 	// TODO: Open the file and read commands line by line
@@ -75,19 +76,15 @@ void* ServeClient(char *client){
 	
 	while(ch != EOF){
 		//printf("%c", ch);
-	
-		
 		//checks if char is a letter, adds to letter array
 		if((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ){
 			str[i] = ch;
 			i++;
-			//add to an array of letters
 		}
 		//checking if char is a number. Adds to number array
 		else if(ch >= '0' && ch <= '9'){
 			num[j] = ch;
 			j++;
-			//add to an array of numbers.
 		}
 		else if(ch == ' '){
 			str[i] = '\0';
@@ -95,40 +92,51 @@ void* ServeClient(char *client){
 		}
 		//if char is the end of the line then execute the command
 		else if(ch == '\n'){
+		        num[j] = '\0';
+		        j++;
 			if(strcmp(str,"insertNode")==0){
 				pthread_rwlock_wrlock(&lock);
 				int y = atoi(num);
-				insertNode(root, y);
+				/*if(root == NULL){
+					printf("IT IS NULL BEFORE");
+					//root = insertNode(root, y);
+				}
+				else{
+					insertNode(root, y);
+				}*/
+				insertNode(root,y);
+				//printf("HERE");
 				printf("[%s]insertNode %u\n",client,y);
 				pthread_rwlock_unlock(&lock);
 			}
 			else if(strcmp(str,"deleteNode")==0){
 				pthread_rwlock_wrlock(&lock);
 				int y = atoi(num);
-				deleteNode(root, y);
+				deleteNode(root, y);	
 				printf("[%s]deleteNode %u\n",client,y);
 				pthread_rwlock_unlock(&lock);
 			}
 			else if(strcmp(str,"countNodes")==0){
 				pthread_rwlock_rdlock(&lock);
-				printf("[%s]countNodes = %u\n",client,countNodes(root));
+				int c = countNodes(root);
+				printf("[%s]countNodes = %u\n",client,c);
 				pthread_rwlock_unlock(&lock);
 			}
 			else if(strcmp(str,"sumSubtree")==0){
 				pthread_rwlock_rdlock(&lock);
-				printf("[%s]sumSubtree = %u\n",client,sumSubtree(root));
+				int s = sumSubtree(root);
+				printf("[%s]sumSubtree = %u\n",client,s);
 				pthread_rwlock_unlock(&lock);
 			}
 			else{
 				//printf("INVALID");
-				pthread_rwlock_unlock(&lock);
 			}
 			i=0;
 			j=0;
 			strcpy(str, "");
 			strcpy(num, "");
 		}
-		pthread_rwlock_rdlock(&lock);
+	        pthread_rwlock_rdlock(&lock);
 		ch = getc(fp);
 		pthread_rwlock_unlock(&lock);
 	}
