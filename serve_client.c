@@ -4,7 +4,7 @@ pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 
 void *downtime(){
 
-	sleep(1);
+	/*sleep(1);
 	//TODO: 1st downtime: Do balanceTree here
 	root_balanced = balanceTree(root);
 	freeSubtree(root);
@@ -26,7 +26,7 @@ void *downtime(){
 	root = root_balanced;
 	freeSubtree(root_balanced);
 	
-
+*/
 	return NULL;
 }
 
@@ -104,7 +104,7 @@ void* ServeClient(char *client){
 				else{
 					insertNode(root, y);
 				}*/
-				insertNode(root,y);
+				root = insertNode(root,y);
 				//printf("HERE");
 				printf("[%s]insertNode %u\n",client,y);
 				pthread_rwlock_unlock(&lock);
@@ -112,7 +112,8 @@ void* ServeClient(char *client){
 			else if(strcmp(str,"deleteNode")==0){
 				pthread_rwlock_wrlock(&lock);
 				int y = atoi(num);
-				deleteNode(root, y);	
+				root = deleteNode(root, y);	
+				//deleteNode(root, y);
 				printf("[%s]deleteNode %u\n",client,y);
 				pthread_rwlock_unlock(&lock);
 			}
