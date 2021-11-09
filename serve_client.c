@@ -1,34 +1,33 @@
 #include<pthread.h>
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 
+void stuff(){
+	root_balanced = balanceTree(root);
+	//freeSubtree(root);
+	//root = NULL;
+	/*root = root_balanced;
+	freeSubtree(root_balanced);
+	root_balanced = NULL;*/
+}
 
 void *downtime(){
 
-	/*sleep(1);
+	sleep(1);
 	//TODO: 1st downtime: Do balanceTree here
-	root_balanced = balanceTree(root);
-	freeSubtree(root);
-	root = root_balanced;
-	freeSubtree(root_balanced);
+	stuff();
 	
 
 	sleep(1);
 	//TODO: 2nd downtime: Do balanceTree here
-	root_balanced = balanceTree(root);
-	freeSubtree(root);
-	root = root_balanced;
-	freeSubtree(root_balanced);
+	stuff();
 
 	sleep(1);
 	//TODO: 3rd downtime: Do balanceTree here
-	root_balanced = balanceTree(root);
-	freeSubtree(root);
-	root = root_balanced;
-	freeSubtree(root_balanced);
+	stuff();
 	
-*/
 	return NULL;
 }
+
 
 
 //STUFF FROM WEEK 4 POWERPOINTS
