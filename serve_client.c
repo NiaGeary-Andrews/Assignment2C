@@ -1,42 +1,47 @@
 #include<pthread.h>
-
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
-//pthread_rwlock_init(lock, NULL);
+
 
 void *downtime(){
 
 	sleep(1);
 	//TODO: 1st downtime: Do balanceTree here
-	//balanceTree();
+	root_balanced = balanceTree(root);
+	freeSubtree(root);
+	root = root_balanced;
+	freeSubtree(root_balanced);
+	
 
 	sleep(1);
 	//TODO: 2nd downtime: Do balanceTree here
-	//balanceTree();
+	root_balanced = balanceTree(root);
+	freeSubtree(root);
+	root = root_balanced;
+	freeSubtree(root_balanced);
 
 	sleep(1);
 	//TODO: 3rd downtime: Do balanceTree here
-	//balanceTree();
+	root_balanced = balanceTree(root);
+	freeSubtree(root);
+	root = root_balanced;
+	freeSubtree(root_balanced);
 
 	return NULL;
 }
 
-//commands:
-//Locking a resource for writing using the function --------------------------------------------
-//int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
-//Unlock the resource for writing using the function -------------------------------------------
-//int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
-//To lock the resource only for reading and not writing we can use the function ----------------
-//int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
-//The lock for reading can be unlocked by the function------------------------------------------
-//int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
+
+//STUFF FROM WEEK 4 POWERPOINTS
+//for just reading: pthread_rwlock_rdlock(&lock);
+//for read-write access: pthread_rwlock_wrlock(&lock);
+//for unlocking: pthread_rwlock_unlock(&lock);
+
+//read lock is used for functions that don't modify the BST
+//write lock is used for functions that do modify the BST
 
 void* ServeClient(char *client){
-	
-	//locks for writing so only one client can write at a time
-	int pthread_rwlock_wrlock(pthread_rwlock_t *lock);
 	char ch;
 	FILE *fp;
-	//char *split;
+	
 
 	//---------------------------------------------------
 	// This part opens a file and reads line by line the commands, think it just needs to be opened for reading though. Make sure to lock it to stop concurrency issues
@@ -44,41 +49,92 @@ void* ServeClient(char *client){
 	//opens file ready for reading specified by the parameter input
 	fp = fopen(client,"r");
 	
-	//reads one char from file
-	ch = getc(fp);
-	//split = strtok(ch, " ");
-	//while the char is not equal to the end of the file execute the loop
-	while(ch != EOF){
-		/*switch(split[0]) {
-			case "insertNode":
-			//printf(client+ch+ theINteger);
-				printf("InsertNode");
-				break;
-			
-			case "deleteNode":
-				printf("DeleteNode");
-				break;
-			
-			case "countNodes":
-				printf("countNodes");
-				break;
-			
-			case "sumSubtree":
-				printf("sumSubtree");
-				break;
-			
-			default:
-				printf("Invalid command");
-		}*/
-		printf("%s",client);
-		printf("%c",ch);
-		ch = getc(fp);
+	//checks a file has been opened
+	if(fp==NULL){
+		printf("Cannot open files\n");
+		exit(-1);	
 	}
 	
-	//printf("%s ",client);
-	//printf("%d ", ch);
-	//printf("\n");
-
+	//locks for writing
+	//pthread_rwlock_wrlock(&lock);
+	
+	//this is the read lock
+	pthread_rwlock_rdlock(&lock);
+	ch = getc(fp);
+	pthread_rwlock_unlock(&lock);
+	
+	char num[40];
+	char str[40];
+	int i;
+	int j;
+	//while the char is not equal to the end of the file execute the loop
+	//printf("%s ", client);
+	
+	//in this part I need to split up char into "insertNode" and 1 so then it can be called as insertNode(root, 1); and same for other functions
+	//gets individual characters so "i" "n" "s" "e" "r" "t" etc
+	
+	while(ch != EOF){
+		//printf("%c", ch);
+	
+		
+		//checks if char is a letter, adds to letter array
+		if((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ){
+			str[i] = ch;
+			i++;
+			//add to an array of letters
+		}
+		//checking if char is a number. Adds to number array
+		else if(ch >= '0' && ch <= '9'){
+			num[j] = ch;
+			j++;
+			//add to an array of numbers.
+		}
+		else if(ch == ' '){
+			str[i] = '\0';
+			i++;
+		}
+		//if char is the end of the line then execute the command
+		else if(ch == '\n'){
+			if(strcmp(str,"insertNode")==0){
+				pthread_rwlock_wrlock(&lock);
+				int y = atoi(num);
+				insertNode(root, y);
+				printf("[%s]insertNode %u\n",client,y);
+				pthread_rwlock_unlock(&lock);
+			}
+			else if(strcmp(str,"deleteNode")==0){
+				pthread_rwlock_wrlock(&lock);
+				int y = atoi(num);
+				deleteNode(root, y);
+				printf("[%s]deleteNode %u\n",client,y);
+				pthread_rwlock_unlock(&lock);
+			}
+			else if(strcmp(str,"countNodes")==0){
+				pthread_rwlock_rdlock(&lock);
+				printf("[%s]countNodes = %u\n",client,countNodes(root));
+				pthread_rwlock_unlock(&lock);
+			}
+			else if(strcmp(str,"sumSubtree")==0){
+				pthread_rwlock_rdlock(&lock);
+				printf("[%s]sumSubtree = %u\n",client,sumSubtree(root));
+				pthread_rwlock_unlock(&lock);
+			}
+			else{
+				//printf("INVALID");
+				pthread_rwlock_unlock(&lock);
+			}
+			i=0;
+			j=0;
+			strcpy(str, "");
+			strcpy(num, "");
+		}
+		pthread_rwlock_rdlock(&lock);
+		ch = getc(fp);
+		pthread_rwlock_unlock(&lock);
+	}
+	//unlocks
+	//pthread_rwlock_unlock(&lock);
+	
 	// TODO: match and execute commands
 
 	// TODO: Handle command: "insertNode <some unsigned int value>"
@@ -88,6 +144,7 @@ void* ServeClient(char *client){
 	// TODO: Handle command: "deleteNode <some unsigned int value>"
 	// print: "[ClientName]deleteNode <SomeNumber>\n"
 	// e.g. "[client1_commands]deleteNode 1\n"
+	
 
 	// TODO: Handle command: "countNodes"
 	// print: "[ClientName]countNodes = <SomeNumber>\n"
@@ -99,7 +156,5 @@ void* ServeClient(char *client){
 	// e.g. "[client1_commands]sumSubtree 1\n"
 
 	fclose(fp);
-	//when finished it unlocks for writing
-	int pthread_rwlock_unlock(pthread_rwlock_t *lock);
 	return NULL;
 }

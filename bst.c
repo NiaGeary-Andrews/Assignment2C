@@ -236,12 +236,6 @@ int depth (Node * R, Node * N) {
     return -1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------------------
-//counts nodes, look further into this!!
-int countNodes(Node* root){
-	//TODO: write this function
-}
-
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 // Sums together the nodes of the trees
@@ -260,43 +254,19 @@ int sumSubtree(Node *N)
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 // For this part I am first going to do an inorder traversal of the tree and store the nodes in a dynamic array. Which I am going to create using pointers and the malloc function
-
+//COUNT NODES FUNCTION
 //This is for working out the size of the tree so I know how big of an array to create
-int sizeOfTree(Node* root){
+int countNodes(Node* root){
 	if (root == NULL){
 		return 0;
 	}
 	else{
-	     return(sizeOfTree(root->left) + 1 + sizeOfTree(root->right));
+	     return(countNodes(root->left) + 1 + countNodes(root->right));
 	}
 }
 
 int i = 0;
 
-/*
-//HAS SAME SUM EVERYTIME BUT FAILS IN SECOND PART
-//---------------------------------------------------------------------------------------------------------------------------------------------------
-//creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
-//TO DO WITH THIS FUNCTION AND THE WAY THE I IS BEING INCREMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-int * inOrder(Node* root, int arr[], int i){
-	
-	
-  	//if the tree is empty it returns an empty list
-  	if (root == NULL){
-  		return NULL;
-  	}
-  	else{
-  	  	//arr[i] = (root->data);
-  		inOrder(root->left,arr,i++);
-  		arr[i] = (root->data);
-  		inOrder(root->right,arr,i++);
-  		return arr;
-  	}
-}
-
-*/
-
-//SUPPOSEDLY PASSES EVERYTIME BUT HAS DIFFERENCE IN SUMS
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //creates an in order array of elements. This returns a pointer to an array as C does not allow returning arrays from functiom
 //SORTED THIS OUT NOW, IT WORKS
@@ -339,7 +309,6 @@ Node* sortArray(Node *root,int arr[], int start, int end){
     //uses recursion to get the next element in the array and makes it the right child of the current root
     //root->right = sortArray(arr, mid+1, end); 
     root->right = sortArray(root->right, arr, mid+1, end);
-    //free(arr);
     return root; 
 }
 
@@ -356,23 +325,13 @@ Node* sortArray(Node *root,int arr[], int start, int end){
 */
 
 Node* balanceTree(Node* root){
-	//inOrder(root);
-	int size = sizeOfTree(root);
+	int size = countNodes(root);
 	int * array_pointer;
-	//int a =1;
 	if((array_pointer = (int *)malloc(sizeof(int)*size)) == NULL){
 		printf("Allocation failed");
 		exit(-1);
 	}
 	
-	
-	//array_pointer = (int *)malloc(sizeof(int)*size);
-	/*if (size == 1){
-		a = 1;
-	}
-	else{
-		a = size-1;
-	}*/
 	return sortArray(NULL,(inOrder(root,array_pointer)), 0, (size)-1);
 }
 
